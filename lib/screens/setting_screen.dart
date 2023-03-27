@@ -1,7 +1,5 @@
 import 'package:chatgpt_course/services/shared_pref_service.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
@@ -11,7 +9,6 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final _apiKeyController = TextEditingController();
-  late SharedPreferences _prefs;
   bool _isLoading = false;
 
   @override
