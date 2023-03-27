@@ -1,6 +1,8 @@
 import 'dart:developer';
 
+import 'package:chatgpt_course/constants/api_consts.dart';
 import 'package:chatgpt_course/constants/constants.dart';
+import 'package:chatgpt_course/providers/auth_provider.dart';
 import 'package:chatgpt_course/providers/chats_provider.dart';
 import 'package:chatgpt_course/screens/setting_screen.dart';
 import 'package:chatgpt_course/services/services.dart';
@@ -28,6 +30,7 @@ class _ChatScreenState extends State<ChatScreen> {
   late FocusNode focusNode;
   @override
   void initState() {
+    _initAppConstants();
     _listScrollController = ScrollController();
     textEditingController = TextEditingController();
     focusNode = FocusNode();
@@ -40,6 +43,12 @@ class _ChatScreenState extends State<ChatScreen> {
     textEditingController.dispose();
     focusNode.dispose();
     super.dispose();
+  }
+
+  Future _initAppConstants() async {
+    final apiKey =
+        await Provider.of<AuthProvider>(context, listen: false).getApiKey();
+    ApiConstants.API_KEY = apiKey ?? "";
   }
 
   // List<ChatModel> chatList = [];

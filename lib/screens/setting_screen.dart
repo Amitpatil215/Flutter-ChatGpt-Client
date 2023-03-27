@@ -1,5 +1,7 @@
+import 'package:chatgpt_course/constants/api_consts.dart';
 import 'package:chatgpt_course/services/shared_pref_service.dart';
 import 'package:flutter/material.dart';
+
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
@@ -21,7 +23,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _isLoading = true;
     });
-    
+
     final apiKey = SharedPrefService().getValue('api_key');
     if (apiKey != null) {
       _apiKeyController.text = apiKey;
@@ -33,6 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _saveApiKey() async {
     await SharedPrefService().setValue('api_key', _apiKeyController.text);
+    ApiConstants.API_KEY = _apiKeyController.text;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('API key saved')),
     );

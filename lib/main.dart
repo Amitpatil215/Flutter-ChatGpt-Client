@@ -1,3 +1,4 @@
+import 'package:chatgpt_course/providers/auth_provider.dart';
 import 'package:chatgpt_course/providers/models_provider.dart';
 import 'package:chatgpt_course/services/shared_pref_service.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => ChatProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(),
         ),
       ],
       child: MaterialApp(
