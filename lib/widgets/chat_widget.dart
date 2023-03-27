@@ -45,7 +45,7 @@ class ChatWidget extends StatelessWidget {
                           ? DefaultTextStyle(
                               style: const TextStyle(
                                   color: Colors.white,
-                                  fontWeight: FontWeight.w700,
+                                  // fontWeight: FontWeight.w700,
                                   fontSize: 16),
                               child: AnimatedTextKit(
                                   isRepeatingAnimation: false,
@@ -62,29 +62,10 @@ class ChatWidget extends StatelessWidget {
                               msg.trim(),
                               style: const TextStyle(
                                   color: Colors.white,
-                                  fontWeight: FontWeight.w700,
+                                  // fontWeight: FontWeight.w700,
                                   fontSize: 16),
                             ),
                 ),
-                chatIndex == 0
-                    ? const SizedBox.shrink()
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Icon(
-                            Icons.thumb_up_alt_outlined,
-                            color: Colors.white,
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Icon(
-                            Icons.thumb_down_alt_outlined,
-                            color: Colors.white,
-                          )
-                        ],
-                      ),
               ],
             ),
           ),
