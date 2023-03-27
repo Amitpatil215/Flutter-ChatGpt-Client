@@ -1,5 +1,5 @@
 # ChatGPT Flutter Client Project Readme
-
+![1](https://user-images.githubusercontent.com/54329870/228063254-51ea3291-8a73-4864-8ad0-7ebb5282ae4e.png)
 ## Overview
 
 ChatGPT is a Flutter-based chat application that allows users to communicate with each other across multiple platforms, including web, Windows, Linux, iOS, and Android. The application is designed to be low-cost and features a chat reply feature that minimizes tokens and reduces costs. Additionally, the application provides local as well as cloud sync functionality to ensure that users' conversations are always up-to-date.
