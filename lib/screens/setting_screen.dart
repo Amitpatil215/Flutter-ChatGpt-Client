@@ -6,7 +6,7 @@ class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
   @override
-  _SettingsScreenState createState() => _SettingsScreenState();
+  State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
@@ -36,11 +36,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _saveApiKey() async {
     await SharedPrefService().setValue('api_key', _apiKeyController.text);
     ApiConstants.API_KEY = _apiKeyController.text;
+    // ignore: use_build_context_synchronously
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('API key saved')),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
