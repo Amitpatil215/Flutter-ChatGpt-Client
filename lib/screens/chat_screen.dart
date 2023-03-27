@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:chatgpt_course/constants/constants.dart';
 import 'package:chatgpt_course/providers/chats_provider.dart';
+import 'package:chatgpt_course/screens/setting_screen.dart';
 import 'package:chatgpt_course/services/services.dart';
 import 'package:chatgpt_course/widgets/chat_widget.dart';
 import 'package:flutter/material.dart';
@@ -55,6 +56,15 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         title: const Text("ChatGPT"),
         actions: [
+          IconButton(
+            onPressed: () async {
+              //navigate to SettingsScreen
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return const SettingsScreen();
+              }));
+            },
+            icon: const Icon(Icons.settings, color: Colors.white),
+          ),
           IconButton(
             onPressed: () async {
               await Services.showModalSheet(context: context);
