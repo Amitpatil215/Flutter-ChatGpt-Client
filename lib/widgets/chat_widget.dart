@@ -29,7 +29,7 @@ class ChatWidget extends StatelessWidget {
                 Image.asset(
                   chatIndex == 0
                       ? AssetsManager.userImage
-                      : AssetsManager.botImage,
+                      : AssetsManager.chatnobg,
                   height: 30,
                   width: 30,
                 ),
