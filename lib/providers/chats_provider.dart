@@ -1,9 +1,11 @@
+import 'package:chatgpt_course/constants/constants.dart';
 import 'package:flutter/cupertino.dart';
 import '../models/chat_model.dart';
 import '../services/api_service.dart';
 
 class ChatProvider with ChangeNotifier {
-  List<ChatModel> chatList = [];
+  // List<ChatModel> chatList = [];
+  List<ChatModel> chatList = [...dummyChatListData];
 
   /// used to get list of messages related to the current messageS
   /// typically replied in the chat
