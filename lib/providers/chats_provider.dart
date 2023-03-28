@@ -4,6 +4,9 @@ import '../services/api_service.dart';
 
 class ChatProvider with ChangeNotifier {
   List<ChatModel> chatList = [];
+
+  /// used to get list of messages related to the current messageS
+  /// typically replied in the chat
   List<ChatModel> _relatedMessageList = [];
   List<ChatModel> get getChatList {
     return chatList;
@@ -19,7 +22,7 @@ class ChatProvider with ChangeNotifier {
     _relatedMessageList.clear();
     _getRelatedMessages(chatMessage: chatMessage);
     _relatedMessageList = _relatedMessageList.reversed.toList();
-    
+
     if (chosenModelId.toLowerCase().startsWith("gpt")) {
       chatList.addAll(await ApiService.sendMessageGPT(
         relatedMessageList: _relatedMessageList,
