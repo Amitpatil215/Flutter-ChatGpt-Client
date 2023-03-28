@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:chatgpt_course/constants/api_consts.dart';
 import 'package:chatgpt_course/constants/constants.dart';
+import 'package:chatgpt_course/models/chat_model.dart';
 import 'package:chatgpt_course/providers/auth_provider.dart';
 import 'package:chatgpt_course/providers/chats_provider.dart';
 import 'package:chatgpt_course/screens/setting_screen.dart';
@@ -10,6 +11,7 @@ import 'package:chatgpt_course/widgets/chat_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 import '../providers/models_provider.dart';
 import '../services/assets_manager.dart';
@@ -186,18 +188,30 @@ class _ChatScreenState extends State<ChatScreen> {
       String msg = textEditingController.text;
       setState(() {
         _isTyping = true;
-        // chatList.add(ChatModel(msg: textEditingController.text, chatIndex: 0));
-        chatProvider.addUserMessage(msg: msg);
+
         textEditingController.clear();
         focusNode.unfocus();
       });
+      ChatModel _newChatMessage = ChatModel(
+          id: Uuid().v4(),
+          // just for testing adding all the previous messages to the reply to id
+          repliedToId: Provider.of<ChatProvider>(context, listen: false)
+                      .chatList
+                      .length !=
+                  0
+              ? Provider.of<ChatProvider>(context, listen: false)
+                  .chatList
+                  .last
+                  .id
+              : null,
+          msg: msg,
+          chatIndex: 0);
+
+      chatProvider.addUserMessage(chatMessage: _newChatMessage);
+
       await chatProvider.sendMessageAndGetAnswers(
-          msg: msg, chosenModelId: modelsProvider.getCurrentModel);
-      // chatList.addAll(await ApiService.sendMessage(
-      //   message: textEditingController.text,
-      //   modelId: modelsProvider.getCurrentModel,
-      // ));
-      setState(() {});
+          chatMessage: _newChatMessage,
+          chosenModelId: modelsProvider.getCurrentModel);
     } catch (error) {
       log("error $error");
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

@@ -1,32 +1,48 @@
 import 'package:flutter/cupertino.dart';
-
 import '../models/chat_model.dart';
 import '../services/api_service.dart';
 
 class ChatProvider with ChangeNotifier {
   List<ChatModel> chatList = [];
+  List<ChatModel> _relatedMessageList = [];
   List<ChatModel> get getChatList {
     return chatList;
   }
 
-  void addUserMessage({required String msg}) {
-    chatList.add(ChatModel(msg: msg, chatIndex: 0));
+  void addUserMessage({required ChatModel chatMessage}) {
+    chatList.add(chatMessage);
     notifyListeners();
   }
 
   Future<void> sendMessageAndGetAnswers(
-      {required String msg, required String chosenModelId}) async {
+      {required ChatModel chatMessage, required String chosenModelId}) async {
+    _relatedMessageList.clear();
+    _getRelatedMessages(chatMessage: chatMessage);
+    _relatedMessageList = _relatedMessageList.reversed.toList();
+    
     if (chosenModelId.toLowerCase().startsWith("gpt")) {
       chatList.addAll(await ApiService.sendMessageGPT(
-        message: msg,
+        relatedMessageList: _relatedMessageList,
         modelId: chosenModelId,
       ));
     } else {
       chatList.addAll(await ApiService.sendMessage(
-        message: msg,
+        message: chatMessage.msg,
         modelId: chosenModelId,
       ));
     }
     notifyListeners();
+  }
+
+  void _getRelatedMessages({
+    required ChatModel chatMessage,
+  }) {
+    _relatedMessageList.add(chatMessage);
+    if (chatMessage.repliedToId != null) {
+      _getRelatedMessages(
+          chatMessage: chatList.firstWhere(
+        (chat) => chat.id == chatMessage.repliedToId,
+      ));
+    }
   }
 }

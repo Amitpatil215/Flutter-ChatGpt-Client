@@ -6,6 +6,7 @@ import 'package:chatgpt_course/constants/api_consts.dart';
 import 'package:chatgpt_course/models/chat_model.dart';
 import 'package:chatgpt_course/models/models_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 class ApiService {
   static Future<List<ModelsModel>> getModels() async {
@@ -36,7 +37,8 @@ class ApiService {
 
   // Send Message using ChatGPT API
   static Future<List<ChatModel>> sendMessageGPT(
-      {required String message, required String modelId}) async {
+      {required List<ChatModel> relatedMessageList,
+      required String modelId}) async {
     try {
       log("modelId $modelId");
       var response = await http.post(
@@ -48,12 +50,12 @@ class ApiService {
         body: jsonEncode(
           {
             "model": modelId,
-            "messages": [
-              {
-                "role": "user",
-                "content": message,
-              }
-            ]
+            "messages": relatedMessageList
+                .map((chat) => {
+                      "role":chat.chatIndex==0 ? "user" : "assistant",
+                      "content": chat.msg,
+                    })
+                .toList(),
           },
         ),
       );
@@ -70,6 +72,8 @@ class ApiService {
         chatList = List.generate(
           jsonResponse["choices"].length,
           (index) => ChatModel(
+            id: Uuid().v4(),
+            repliedToId: relatedMessageList.last.id,
             msg: jsonResponse["choices"][index]["message"]["content"],
             chatIndex: 1,
           ),
@@ -97,7 +101,7 @@ class ApiService {
           {
             "model": modelId,
             "prompt": message,
-            "max_tokens": 300,
+            "max_tokens": ApiConstants.max_tokens,
           },
         ),
       );
@@ -115,6 +119,7 @@ class ApiService {
         chatList = List.generate(
           jsonResponse["choices"].length,
           (index) => ChatModel(
+            id: Uuid().v4(),
             msg: jsonResponse["choices"][index]["text"],
             chatIndex: 1,
           ),
