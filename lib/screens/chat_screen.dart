@@ -102,11 +102,8 @@ class _ChatScreenState extends State<ChatScreen> {
                           : "";
                   return Dismissible(
                     key: Key(Uuid().v4()),
-                    direction: chatProvider.getChatList[index].chatIndex == 0
-                        ? DismissDirection.endToStart
-                        : DismissDirection.startToEnd,
+                    direction: DismissDirection.startToEnd,
                     dismissThresholds: {
-                      DismissDirection.endToStart: 0.1,
                       DismissDirection.startToEnd: 0.1,
                     },
                     onUpdate: (DismissUpdateDetails details) {
@@ -122,17 +119,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20),
                         child: Row(
-                          mainAxisAlignment:
-                              chatProvider.getChatList[index].chatIndex == 0
-                                  ? MainAxisAlignment.end
-                                  : MainAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Icon(Icons.reply_outlined, color: Colors.white),
-                            SizedBox(width: 10),
-                            Text(
-                              'Reply',
-                              style: TextStyle(color: Colors.white),
-                            ),
                           ],
                         ),
                       ),
