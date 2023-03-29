@@ -26,7 +26,8 @@ List<ChatModel> dummyChatListData = [
   ChatModel(
     id: '4',
     repliedToId: null,
-    msg: " This is `code` example ``` class MarkdownHelper { Map<String, Widget> getTitleWidget(m.Node node) => title.getTitleWidget(node); Widget getPWidget(m.Element node) => p.getPWidget(node); Widget getPreWidget(m.Node node) => pre.getPreWidget(node); } ``` It ends here",
+    msg:
+        "Sure, here's a basic boilerplate code for a Flutter app:\n\n```dart\nimport 'package:flutter/material.dart';\n\nvoid main() {\n  runApp(MyApp());\n}\n\nclass MyApp extends StatelessWidget {\n  @override\n  Widget build(BuildContext context) {\n    return MaterialApp(\n      title: 'My App',\n      theme: ThemeData(\n        primarySwatch: Colors.blue,\n        visualDensity: VisualDensity.adaptivePlatformDensity,\n      ),\n      home: MyHomePage(),\n    );\n  }\n}\n\nclass MyHomePage extends StatefulWidget {\n  @override\n  _MyHomePageState createState() => _MyHomePageState();\n}\n\nclass _MyHomePageState extends State<MyHomePage> {\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: Text('My App'),\n      ),\n      body: Center(\n        child: Text(\n          'Hello, world!',\n          style: TextStyle(fontSize: 24),\n        ),\n      ),\n    );\n  }\n}\n```\n\nThis code sets up a basic Flutter app with a `MaterialApp` widget as the root of the widget tree, a `MyHomePage` widget as the home screen, and an `AppBar` with a title. The `MyHomePage` widget is a `StatefulWidget`, which means it has mutable state that can change over time. In this case, the state is not used, and the widget simply displays a centered text widget.",
     chatIndex: 1,
   ),
   ChatModel(

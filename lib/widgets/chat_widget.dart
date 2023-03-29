@@ -1,4 +1,3 @@
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:chatgpt_course/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:markdown_widget/markdown_widget.dart';
@@ -102,9 +101,9 @@ class ChatWidget extends StatelessWidget {
                       : MarkdownWidget(
                           data: msg.trim(),
                           selectable: true,
-                          config: MarkdownConfig.darkConfig,
+                          config: MarkdownConfig.defaultConfig,
                           shrinkWrap: true,
-                        )
+                        ),
                 ],
               ),
             ),
