@@ -1,6 +1,7 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:chatgpt_course/constants/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:markdown_widget/markdown_widget.dart';
 
 import 'text_widget.dart';
 
@@ -70,34 +71,40 @@ class ChatWidget extends StatelessWidget {
                   chatIndex == 0
                       ? TextWidget(
                           label: msg, fontWeight: FontWeight.w500, fontSize: 16)
-                      : shouldAnimate
-                          ? DefaultTextStyle(
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16),
-                              child: AnimatedTextKit(
-                                  isRepeatingAnimation: false,
-                                  repeatForever: false,
-                                  displayFullTextOnTap: true,
-                                  totalRepeatCount: 1,
-                                  animatedTexts: [
-                                    TyperAnimatedText(
-                                      msg.trim(),
-                                      textStyle: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 16),
-                                    ),
-                                  ]),
-                            )
-                          : Text(
-                              msg.trim(),
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  // fontWeight: FontWeight.w700,
-                                  fontSize: 16),
-                            ),
+                      // : shouldAnimate
+                      //     ? DefaultTextStyle(
+                      //         style: const TextStyle(
+                      //             color: Colors.white,
+                      //             fontWeight: FontWeight.w500,
+                      //             fontSize: 16),
+                      //         child: AnimatedTextKit(
+                      //             isRepeatingAnimation: false,
+                      //             repeatForever: false,
+                      //             displayFullTextOnTap: true,
+                      //             totalRepeatCount: 1,
+                      //             animatedTexts: [
+                      //               TyperAnimatedText(
+                      //                 msg.trim(),
+                      //                 textStyle: const TextStyle(
+                      //                     color: Colors.white,
+                      //                     fontWeight: FontWeight.w500,
+                      //                     fontSize: 16),
+                      //               ),
+                      //             ]),
+                      //       )
+                      // : SelectableText(
+                      //     msg.trim(),
+                      //     style: const TextStyle(
+                      //         color: Colors.white,
+                      //         // fontWeight: FontWeight.w700,
+                      //         fontSize: 16),
+                      //   ),
+                      : MarkdownWidget(
+                          data: msg.trim(),
+                          selectable: true,
+                          config: MarkdownConfig.darkConfig,
+                          shrinkWrap: true,
+                        )
                 ],
               ),
             ),

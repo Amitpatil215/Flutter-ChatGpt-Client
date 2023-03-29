@@ -52,10 +52,17 @@ class ApiService {
             "model": modelId,
             "messages": relatedMessageList
                 .map((chat) => {
-                      "role":chat.chatIndex==0 ? "user" : "assistant",
+                      "role": chat.chatIndex == 0
+                          ? "user"
+                          : chat.chatIndex == 1
+                              ? "assistant"
+                              : "system",
                       "content": chat.msg,
                     })
                 .toList(),
+            "temperature": 0.5,
+            "n": 1,
+            "max_tokens": 300,
           },
         ),
       );

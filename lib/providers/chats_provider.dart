@@ -1,11 +1,17 @@
 import 'package:chatgpt_course/constants/constants.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:uuid/uuid.dart';
 import '../models/chat_model.dart';
 import '../services/api_service.dart';
 
 class ChatProvider with ChangeNotifier {
-  // List<ChatModel> chatList = [];
-  List<ChatModel> chatList = [...dummyChatListData];
+  List<ChatModel> chatList = [];
+  // List<ChatModel> chatList = [...dummyChatListData];
+  ChatModel _systemMessage = ChatModel(
+      id: Uuid().v4(),
+      msg:
+          "You are ChatGPT, a large language model trained by OpenAI. Current date and time: ${DateTime.now()}",
+      chatIndex: 3);
 
   /// used to get list of messages related to the current messageS
   /// typically replied in the chat
@@ -24,7 +30,9 @@ class ChatProvider with ChangeNotifier {
     _relatedMessageList.clear();
     _getRelatedMessages(chatMessage: chatMessage);
     _relatedMessageList = _relatedMessageList.reversed.toList();
-
+    // add system message
+    _relatedMessageList.insert(0, _systemMessage);
+    // make a request to the API
     if (chosenModelId.toLowerCase().startsWith("gpt")) {
       chatList.addAll(await ApiService.sendMessageGPT(
         relatedMessageList: _relatedMessageList,

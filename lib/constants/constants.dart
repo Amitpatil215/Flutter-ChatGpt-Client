@@ -26,22 +26,7 @@ List<ChatModel> dummyChatListData = [
   ChatModel(
     id: '4',
     repliedToId: null,
-    msg: """In the dreamland, stars shine bright
-        On the earthly side of seasons light
-        They rush by, but we hold them tight
-        Adorning roses that are pink and light
-        In our minds we paint their form
-        This beautiful inspiration that's born
-        Their twinkling into our eyes has got a hold
-        Their straight look in the summer sunset so bold
-        With the heavy weight of rose petal
-        They swirl and sway in beautiful mettle
-        They twirl under the heavy waves
-        As a symbol of life, their beauty saves
-        For with the wonderful sight of the stars
-        We master the art of escaping our scars
-        The shimmering star and the blooming rose
-        Gleams in the heart of the god, it just glows.',""",
+    msg: " This is `code` example ``` class MarkdownHelper { Map<String, Widget> getTitleWidget(m.Node node) => title.getTitleWidget(node); Widget getPWidget(m.Element node) => p.getPWidget(node); Widget getPreWidget(m.Node node) => pre.getPreWidget(node); } ``` It ends here",
     chatIndex: 1,
   ),
   ChatModel(

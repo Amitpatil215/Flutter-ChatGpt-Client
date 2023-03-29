@@ -15,7 +15,7 @@ class TextWidget extends StatelessWidget {
   final FontWeight? fontWeight;
   @override
   Widget build(BuildContext context) {
-    return Text(
+    return SelectableText(
       label,
       // textAlign: TextAlign.justify,
       style: TextStyle(
