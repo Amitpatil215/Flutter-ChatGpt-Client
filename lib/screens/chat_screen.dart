@@ -89,25 +89,65 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Flexible(
               child: ListView.builder(
-                  controller: _listScrollController,
-                  itemCount: chatProvider.getChatList.length,
-                  itemBuilder: (context, index) {
-                    String _repliedToText =
-                        chatProvider.getChatList[index].repliedToId != null
-                            ? chatProvider.getChatList
-                                .firstWhere((chat) =>
-                                    chat.id ==
-                                    chatProvider.getChatList[index].repliedToId)
-                                .msg
-                            : "";
-                    return ChatWidget(
+                controller: _listScrollController,
+                itemCount: chatProvider.getChatList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  String _repliedToText =
+                      chatProvider.getChatList[index].repliedToId != null
+                          ? chatProvider.getChatList
+                              .firstWhere((chat) =>
+                                  chat.id ==
+                                  chatProvider.getChatList[index].repliedToId)
+                              .msg
+                          : "";
+                  return Dismissible(
+                    key: Key(Uuid().v4()),
+                    direction: chatProvider.getChatList[index].chatIndex == 0
+                        ? DismissDirection.endToStart
+                        : DismissDirection.startToEnd,
+                    dismissThresholds: {
+                      DismissDirection.endToStart: 0.1,
+                      DismissDirection.startToEnd: 0.1,
+                    },
+                    onUpdate: (DismissUpdateDetails details) {
+                      if (details.reached && !details.previousReached) {
+                        log("Replying to message");
+                      }
+                    },
+                    confirmDismiss: (direction) {
+                      // do not actually dismiss the widget
+                      return Future.value(false);
+                    },
+                    background: Container(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment:
+                              chatProvider.getChatList[index].chatIndex == 0
+                                  ? MainAxisAlignment.end
+                                  : MainAxisAlignment.start,
+                          children: [
+                            Icon(Icons.reply_outlined, color: Colors.white),
+                            SizedBox(width: 10),
+                            Text(
+                              'Reply',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    child: ChatWidget(
                       msg: chatProvider.getChatList[index].msg,
                       chatIndex: chatProvider.getChatList[index].chatIndex,
                       repliedToMessage: _repliedToText,
                       shouldAnimate:
                           chatProvider.getChatList.length - 1 == index,
-                    );
-                  }),
+                    ),
+                    // Other chat bubble properties
+                  );
+                },
+              ),
             ),
             if (_isTyping) ...[
               const SpinKitThreeBounce(

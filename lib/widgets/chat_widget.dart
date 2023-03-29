@@ -65,7 +65,6 @@ class ChatWidget extends StatelessWidget {
                         ),
                       ),
                     SizedBox(height: 5),
-                    
                     if (repliedToMessage.isNotEmpty)
                       Container(
                         padding: EdgeInsets.all(10),
@@ -78,6 +77,8 @@ class ChatWidget extends StatelessWidget {
                           maxLines: 2,
                         ),
                       ),
+                    if (repliedToMessage.isNotEmpty && chatIndex == 0)
+                      SizedBox(height: 5),
                     chatIndex == 0
                         ? TextWidget(
                             label: msg,
