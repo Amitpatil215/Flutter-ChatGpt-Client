@@ -191,7 +191,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void scrollListToEND() {
     _listScrollController.animateTo(
         _listScrollController.position.maxScrollExtent,
-        duration: const Duration(seconds: 2),
+        duration: const Duration(seconds: 1),
         curve: Curves.easeOut);
   }
 
