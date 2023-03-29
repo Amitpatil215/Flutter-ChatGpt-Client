@@ -100,8 +100,19 @@ class ChatWidget extends StatelessWidget {
                       //   ),
                       : MarkdownWidget(
                           data: msg.trim(),
+                          // data: " hbu `Hello` uyub",
                           selectable: true,
-                          config: MarkdownConfig.defaultConfig,
+                          // config: MarkdownConfig.defaultConfig,
+                          config: MarkdownConfig(
+                            configs: [
+                              PConfig(
+                                textStyle: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
                           shrinkWrap: true,
                         ),
                 ],
