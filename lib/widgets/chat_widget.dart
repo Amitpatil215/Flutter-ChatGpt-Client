@@ -5,13 +5,16 @@ import 'package:markdown_widget/markdown_widget.dart';
 import 'text_widget.dart';
 
 class ChatWidget extends StatelessWidget {
-  const ChatWidget(
-      {super.key,
-      required this.msg,
-      required this.chatIndex,
-      this.shouldAnimate = false});
+  const ChatWidget({
+    super.key,
+    required this.msg,
+    required this.chatIndex,
+    required this.repliedToMessage,
+    this.shouldAnimate = false,
+  });
 
   final String msg;
+  final String repliedToMessage;
   final int chatIndex;
   final bool shouldAnimate;
   @override
@@ -24,13 +27,6 @@ class ChatWidget extends StatelessWidget {
         mainAxisAlignment:
             !isMe ? MainAxisAlignment.start : MainAxisAlignment.end,
         children: <Widget>[
-          // if (!isMe)
-          //   Padding(
-          //     padding: EdgeInsets.only(right: 8.0),
-          //     child: CircleAvatar(
-          //       child: Text('Other'),
-          //     ),
-          //   ),
           Flexible(
             child: Container(
               decoration: BoxDecoration(
@@ -44,88 +40,70 @@ class ChatWidget extends StatelessWidget {
                 ),
               ),
               padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(height: 5),
-                  if (isMe)
-                    Text(
-                      "You",
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: Colors.deepOrange,
-                      ),
-                    ),
-                  if (!isMe)
-                    Text(
-                      "Assistant",
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: Colors.blue,
-                      ),
-                    ),
-                  SizedBox(height: 5),
-                  // Got an image this widget will take over
-
-                  chatIndex == 0
-                      ? TextWidget(
-                          label: msg, fontWeight: FontWeight.w500, fontSize: 16)
-                      // : shouldAnimate
-                      //     ? DefaultTextStyle(
-                      //         style: const TextStyle(
-                      //             color: Colors.white,
-                      //             fontWeight: FontWeight.w500,
-                      //             fontSize: 16),
-                      //         child: AnimatedTextKit(
-                      //             isRepeatingAnimation: false,
-                      //             repeatForever: false,
-                      //             displayFullTextOnTap: true,
-                      //             totalRepeatCount: 1,
-                      //             animatedTexts: [
-                      //               TyperAnimatedText(
-                      //                 msg.trim(),
-                      //                 textStyle: const TextStyle(
-                      //                     color: Colors.white,
-                      //                     fontWeight: FontWeight.w500,
-                      //                     fontSize: 16),
-                      //               ),
-                      //             ]),
-                      //       )
-                      // : SelectableText(
-                      //     msg.trim(),
-                      //     style: const TextStyle(
-                      //         color: Colors.white,
-                      //         // fontWeight: FontWeight.w700,
-                      //         fontSize: 16),
-                      //   ),
-                      : MarkdownWidget(
-                          data: msg.trim(),
-                          // data: " hbu `Hello` uyub",
-                          selectable: true,
-                          // config: MarkdownConfig.defaultConfig,
-                          config: MarkdownConfig(
-                            configs: [
-                              PConfig(
-                                textStyle: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                          shrinkWrap: true,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.8,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(height: 5),
+                    if (isMe)
+                      Text(
+                        "You",
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.deepOrange,
                         ),
-                ],
+                      ),
+                    if (!isMe)
+                      Text(
+                        "Assistant",
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    SizedBox(height: 5),
+                    
+                    if (repliedToMessage.isNotEmpty)
+                      Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: Colors.black12,
+                        ),
+                        child: Text(
+                          repliedToMessage,
+                          maxLines: 2,
+                        ),
+                      ),
+                    chatIndex == 0
+                        ? TextWidget(
+                            label: msg,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16)
+                        : Column(
+                            children: [
+                              ...MarkdownGenerator(
+                                config: MarkdownConfig(
+                                  configs: [
+                                    PConfig(
+                                      textStyle: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ).buildWidgets(msg.trim())
+                            ],
+                          )
+                  ],
+                ),
               ),
             ),
           ),
-          // if (isMe)
-          //   Padding(
-          //     padding: EdgeInsets.only(left: 8.0),
-          //     child: CircleAvatar(
-          //       child: Text('Me'),
-          //     ),
-          //   ),
         ],
       ),
     );

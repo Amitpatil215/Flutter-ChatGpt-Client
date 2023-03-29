@@ -92,9 +92,18 @@ class _ChatScreenState extends State<ChatScreen> {
                   controller: _listScrollController,
                   itemCount: chatProvider.getChatList.length,
                   itemBuilder: (context, index) {
+                    String _repliedToText =
+                        chatProvider.getChatList[index].repliedToId != null
+                            ? chatProvider.getChatList
+                                .firstWhere((chat) =>
+                                    chat.id ==
+                                    chatProvider.getChatList[index].repliedToId)
+                                .msg
+                            : "";
                     return ChatWidget(
                       msg: chatProvider.getChatList[index].msg,
                       chatIndex: chatProvider.getChatList[index].chatIndex,
+                      repliedToMessage: _repliedToText,
                       shouldAnimate:
                           chatProvider.getChatList.length - 1 == index,
                     );
