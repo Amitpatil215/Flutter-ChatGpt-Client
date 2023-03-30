@@ -8,6 +8,7 @@ import 'package:chatgpt_course/providers/chats_provider.dart';
 import 'package:chatgpt_course/screens/setting_screen.dart';
 import 'package:chatgpt_course/services/services.dart';
 import 'package:chatgpt_course/widgets/chat_widget.dart';
+import 'package:chatgpt_course/widgets/reply_message_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +27,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   bool _isTyping = false;
+  String? _isReplingToId;
 
   late TextEditingController textEditingController;
   late ScrollController _listScrollController;
@@ -109,6 +111,10 @@ class _ChatScreenState extends State<ChatScreen> {
                     onUpdate: (DismissUpdateDetails details) {
                       if (details.reached && !details.previousReached) {
                         log("Replying to message");
+
+                        setState(() {
+                          _isReplingToId = chatProvider.getChatList[index].id;
+                        });
                       }
                     },
                     confirmDismiss: (direction) {
@@ -147,6 +153,21 @@ class _ChatScreenState extends State<ChatScreen> {
             const SizedBox(
               height: 15,
             ),
+            if (_isReplingToId != null) ...[
+              ReplyMessageWidget(
+                message: chatProvider.getChatList.firstWhere(
+                  (chat) => chat.id == _isReplingToId,
+                ),
+                onCancelReply: () {
+                  setState(() {
+                    _isReplingToId = null;
+                  });
+                },
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+            ],
             Material(
               color: cardColor,
               child: Padding(
@@ -231,20 +252,15 @@ class _ChatScreenState extends State<ChatScreen> {
       ChatModel _newChatMessage = ChatModel(
           id: Uuid().v4(),
           // just for testing adding all the previous messages to the reply to id
-          repliedToId: Provider.of<ChatProvider>(context, listen: false)
-                      .chatList
-                      .length !=
-                  0
-              ? Provider.of<ChatProvider>(context, listen: false)
-                  .chatList
-                  .last
-                  .id
-              : null,
+          repliedToId: _isReplingToId,
           msg: msg,
           chatIndex: 0);
 
       chatProvider.addUserMessage(chatMessage: _newChatMessage);
 
+      setState(() {
+        _isReplingToId = null;
+      });
       await chatProvider.sendMessageAndGetAnswers(
           chatMessage: _newChatMessage,
           chosenModelId: modelsProvider.getCurrentModel);
