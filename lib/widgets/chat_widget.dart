@@ -89,6 +89,7 @@ class ChatWidget extends StatelessWidget {
                               ...MarkdownGenerator(
                                 config: MarkdownConfig(
                                   configs: [
+                                    CodeConfig.darkConfig,
                                     PConfig(
                                       textStyle: TextStyle(
                                         color: Colors.white,
