@@ -94,6 +94,7 @@ class ApiService {
   }
 
   // Send Message to ChatGPT and receives the streamed response in chunk
+  /// Courtesy : https://github.com/alfianlosari/chatgpt_api_dart/blob/main/lib/src/chatgptclient.dart#L102
   static Stream<String> sendMessageStream(
       {required List<ChatModel> relatedMessageList,
       required String modelId}) async* {
