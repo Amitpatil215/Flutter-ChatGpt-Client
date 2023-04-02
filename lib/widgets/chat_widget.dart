@@ -2,8 +2,6 @@ import 'package:chatgpt_course/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 
-import 'text_widget.dart';
-
 class ChatWidget extends StatelessWidget {
   const ChatWidget({
     super.key,

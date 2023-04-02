@@ -185,6 +185,13 @@ class _ChatScreenState extends State<ChatScreen> {
                         decoration: const InputDecoration.collapsed(
                             hintText: "How can I help you",
                             hintStyle: TextStyle(color: Colors.grey)),
+                        maxLines: 4,
+                        minLines: 1,
+                        onFieldSubmitted: (val) async {
+                          await sendMessageFCT(
+                              modelsProvider: modelsProvider,
+                              chatProvider: chatProvider);
+                        },
                       ),
                     ),
                     IconButton(
