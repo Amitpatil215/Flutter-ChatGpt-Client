@@ -12,14 +12,14 @@
 
 
 
-ChatGPT is a Flutter-based chat application that allows users to communicate with each other across multiple platforms, including web, Windows, Linux, iOS, and Android. The application is designed to be low-cost and features a chat reply feature that minimizes tokens and reduces costs. Additionally, the application provides local as well as cloud sync functionality to ensure that users' conversations are always up-to-date.
+ChatGPT is a Flutter-based chat application that allows users to communicate with each other across multiple platforms, including web, Windows, Linux, iOS, and Android. The application is designed to be low-cost and features a chat reply feature that minimizes tokens and reduces costs.
 
 ## Features
 
-- Cross-platform compatibility: ChatGPT is built using Flutter, making it compatible with a wide range of platforms, including web, Windows, Linux, iOS, and Android.
+- Cross-platform compatibility: ChatGPT is built using Flutter, making it compatible with a wide range of platforms, including web, Windows, iOS, and Android.
 - Low cost: The application is designed to be low-cost, making it accessible to a wide range of users.
 - Chat reply feature: The chat reply feature allows users to reply to specific messages, minimizing the number of tokens needed and reducing costs.
-- Local and cloud sync: The application provides both local and cloud sync functionality, ensuring that users' conversations are always up-to-date.
+
 
 ## Getting Started
 
