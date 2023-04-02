@@ -5,8 +5,17 @@
 )
 
 
-![1](https://user-images.githubusercontent.com/54329870/228063254-51ea3291-8a73-4864-8ad0-7ebb5282ae4e.png)
+
 ## Overview
+<div style="display:flex;">
+  <img src="https://user-images.githubusercontent.com/54329870/229358886-48e72b80-2e32-4bff-83c7-5992fa28348d.jpg" alt="image1" style="width:33.33%;">
+
+  <img src="https://user-images.githubusercontent.com/54329870/229358888-ad77fef9-ac8d-436f-8550-3d6173e45260.jpg" alt="image2" style="width:33.33%;">
+  
+  <img src="https://user-images.githubusercontent.com/54329870/229358890-0c7a66f2-b669-4951-a3c6-0720e5099c0b.jpg" alt="image3" style="width:33.33%;">
+</div
+
+
 
 ChatGPT is a Flutter-based chat application that allows users to communicate with each other across multiple platforms, including web, Windows, Linux, iOS, and Android. The application is designed to be low-cost and features a chat reply feature that minimizes tokens and reduces costs. Additionally, the application provides local as well as cloud sync functionality to ensure that users' conversations are always up-to-date.
 
