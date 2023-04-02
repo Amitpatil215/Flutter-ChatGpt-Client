@@ -30,12 +30,12 @@ class _ChatScreenState extends State<ChatScreen> {
   String? _isReplingToId;
 
   late TextEditingController textEditingController;
-  late ScrollController _listScrollController;
+  // late ScrollController _listScrollController;
   late FocusNode focusNode;
   @override
   void initState() {
     _initAppConstants();
-    _listScrollController = ScrollController();
+    // _listScrollController = ScrollController();
     textEditingController = TextEditingController();
     focusNode = FocusNode(
       onKey: _handleKeyPress,
@@ -56,7 +56,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    _listScrollController.dispose();
+    // _listScrollController.dispose();
     textEditingController.dispose();
     focusNode.dispose();
     super.dispose();
@@ -102,15 +102,17 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Flexible(
               child: ListView.builder(
-                controller: _listScrollController,
+                // controller: _listScrollController,
+                reverse: true,
                 itemCount: chatProvider.getChatList.length,
                 itemBuilder: (BuildContext context, int index) {
+                  final chatList = chatProvider.getChatList.reversed.toList();
                   String _repliedToText =
-                      chatProvider.getChatList[index].repliedToId != null
-                          ? chatProvider.getChatList
+                      chatList[index].repliedToId != null
+                          ? chatList
                               .firstWhere((chat) =>
                                   chat.id ==
-                                  chatProvider.getChatList[index].repliedToId)
+                                  chatList[index].repliedToId)
                               .msg
                           : "";
                   return Dismissible(
@@ -124,7 +126,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         log("Replying to message");
 
                         setState(() {
-                          _isReplingToId = chatProvider.getChatList[index].id;
+                          _isReplingToId = chatList[index].id;
                         });
                       }
                     },
@@ -144,11 +146,11 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                     ),
                     child: ChatWidget(
-                      msg: chatProvider.getChatList[index].msg,
-                      chatIndex: chatProvider.getChatList[index].chatIndex,
+                      msg: chatList[index].msg,
+                      chatIndex: chatList[index].chatIndex,
                       repliedToMessage: _repliedToText,
                       shouldAnimate:
-                          chatProvider.getChatList.length - 1 == index,
+                          chatList.length - 1 == index,
                     ),
                     // Other chat bubble properties
                   );
@@ -166,7 +168,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             if (_isReplingToId != null) ...[
               ReplyMessageWidget(
-                message: chatProvider.getChatList.firstWhere(
+                message: chatProvider.chatList.firstWhere(
                   (chat) => chat.id == _isReplingToId,
                 ),
                 onCancelReply: () {
@@ -224,10 +226,10 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void scrollListToEND() {
-    _listScrollController.animateTo(
-        _listScrollController.position.maxScrollExtent,
-        duration: const Duration(seconds: 1),
-        curve: Curves.easeOut);
+    // _listScrollController.animateTo(
+    //     _listScrollController.position.maxScrollExtent,
+    //     duration: const Duration(seconds: 1),
+    //     curve: Curves.easeOut);
   }
 
   Future<void> sendMessageFCT() async {
