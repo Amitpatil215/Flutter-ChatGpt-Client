@@ -5,17 +5,21 @@
 )
 
 
-![1](https://user-images.githubusercontent.com/54329870/228063254-51ea3291-8a73-4864-8ad0-7ebb5282ae4e.png)
+
 ## Overview
 
-ChatGPT is a Flutter-based chat application that allows users to communicate with each other across multiple platforms, including web, Windows, Linux, iOS, and Android. The application is designed to be low-cost and features a chat reply feature that minimizes tokens and reduces costs. Additionally, the application provides local as well as cloud sync functionality to ensure that users' conversations are always up-to-date.
+<img src="https://user-images.githubusercontent.com/54329870/229358886-48e72b80-2e32-4bff-83c7-5992fa28348d.jpg" alt="image1" width="30.33%"> <img src="https://user-images.githubusercontent.com/54329870/229358888-ad77fef9-ac8d-436f-8550-3d6173e45260.jpg" alt="image2" width="30.33%"> <img src="https://user-images.githubusercontent.com/54329870/229358890-0c7a66f2-b669-4951-a3c6-0720e5099c0b.jpg" alt="image3" width="30.33%">
+
+
+
+ChatGPT is a Flutter-based chat application that allows users to communicate with each other across multiple platforms, including web, Windows, Linux, iOS, and Android. The application is designed to be low-cost and features a chat reply feature that minimizes tokens and reduces costs.
 
 ## Features
 
-- Cross-platform compatibility: ChatGPT is built using Flutter, making it compatible with a wide range of platforms, including web, Windows, Linux, iOS, and Android.
+- Cross-platform compatibility: ChatGPT is built using Flutter, making it compatible with a wide range of platforms, including web, Windows, iOS, and Android.
 - Low cost: The application is designed to be low-cost, making it accessible to a wide range of users.
 - Chat reply feature: The chat reply feature allows users to reply to specific messages, minimizing the number of tokens needed and reducing costs.
-- Local and cloud sync: The application provides both local and cloud sync functionality, ensuring that users' conversations are always up-to-date.
+
 
 ## Getting Started
 

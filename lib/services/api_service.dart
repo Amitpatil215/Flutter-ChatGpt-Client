@@ -93,6 +93,79 @@ class ApiService {
     }
   }
 
+  // Send Message to ChatGPT and receives the streamed response in chunk
+  /// Courtesy : https://github.com/alfianlosari/chatgpt_api_dart/blob/main/lib/src/chatgptclient.dart#L102
+  static Stream<String> sendMessageStream(
+      {required List<ChatModel> relatedMessageList,
+      required String modelId}) async* {
+    final request = http.Request(
+        "POST", Uri.parse("${ApiConstants.BASE_URL}/chat/completions"))
+      ..headers.addAll({
+        'Authorization': 'Bearer ${ApiConstants.API_KEY}',
+        "Content-Type": "application/json"
+      });
+    request.body = jsonEncode(
+      {
+        "model": modelId,
+        "messages": relatedMessageList
+            .map((chat) => {
+                  "role": chat.chatIndex == 0
+                      ? "user"
+                      : chat.chatIndex == 1
+                          ? "assistant"
+                          : "system",
+                  "content": chat.msg,
+                })
+            .toList(),
+        "temperature": 0.5,
+        "n": 1,
+        "max_tokens": 300,
+        "stream": true,
+      },
+    );
+
+    final response = await request.send();
+    final statusCode = response.statusCode;
+    final byteStream = response.stream;
+
+    if (!(statusCode >= 200 && statusCode < 300)) {
+      var error = "";
+      await for (final byte in byteStream) {
+        final decoded = utf8.decode(byte).trim();
+        final map = jsonDecode(decoded) as Map;
+        final errorMessage = map["error"]["message"] as String;
+        error += errorMessage;
+      }
+      throw Exception(
+          "($statusCode) ${error.isEmpty ? "Bad Response" : error}");
+    }
+
+    var responseText = "";
+    await for (final byte in byteStream) {
+      var decoded = utf8.decode(byte);
+      final strings = decoded.split("data: ");
+      for (final string in strings) {
+        final trimmedString = string.trim();
+        if (trimmedString.isNotEmpty && !trimmedString.endsWith("[DONE]")) {
+          final map = jsonDecode(trimmedString) as Map;
+          final choices = map["choices"] as List;
+
+          final delta = choices[0]["delta"];
+          if (delta["content"] != null) {
+            final content = delta["content"] as String;
+            responseText += content;
+            print("content- > $content");
+            yield content;
+          }
+        }
+      }
+    }
+
+    if (responseText.isNotEmpty) {
+      // _appendToHistoryList(text, responseText);
+    }
+  }
+
   // Send Message fct
   static Future<List<ChatModel>> sendMessage(
       {required String message, required String modelId}) async {
