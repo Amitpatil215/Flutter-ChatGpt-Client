@@ -1,6 +1,6 @@
-// ignore: unused_import
 import 'dart:async';
 
+// ignore: unused_import
 import 'package:chatgpt_course/constants/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:uuid/uuid.dart';
@@ -8,8 +8,8 @@ import '../models/chat_model.dart';
 import '../services/api_service.dart';
 
 class ChatProvider with ChangeNotifier {
-  // List<ChatModel> chatList = [];
-  List<ChatModel> chatList = [...dummyChatListData];
+  List<ChatModel> chatList = [];
+  // List<ChatModel> chatList = [...dummyChatListData];
 
   StreamSubscription<String>? _onGoningStreamListner;
   ChatModel _systemMessage = ChatModel(

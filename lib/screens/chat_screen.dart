@@ -30,12 +30,12 @@ class _ChatScreenState extends State<ChatScreen> {
   String? _isReplingToId;
 
   late TextEditingController textEditingController;
-  // late ScrollController _listScrollController;
+  late ScrollController _listScrollController;
   late FocusNode focusNode;
   @override
   void initState() {
     _initAppConstants();
-    // _listScrollController = ScrollController();
+    _listScrollController = ScrollController();
     textEditingController = TextEditingController();
     focusNode = FocusNode(
       onKey: _handleKeyPress,
@@ -56,7 +56,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    // _listScrollController.dispose();
+    _listScrollController.dispose();
     textEditingController.dispose();
     focusNode.dispose();
     super.dispose();
@@ -107,7 +107,7 @@ class _ChatScreenState extends State<ChatScreen> {
               child:
                   Consumer<ChatProvider>(builder: (context, chatProvider, wi) {
                 return ListView.builder(
-                  // controller: _listScrollController,
+                  controller: _listScrollController,
                   reverse: true,
                   itemCount: chatProvider.getChatList.length,
                   itemBuilder: (BuildContext context, int index) {
@@ -240,11 +240,9 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  void scrollListToEND() {
-    // _listScrollController.animateTo(
-    //     _listScrollController.position.maxScrollExtent,
-    //     duration: const Duration(seconds: 1),
-    //     curve: Curves.easeOut);
+  Future scrollListToEND() async {
+    return await _listScrollController.animateTo(0.0,
+        duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
   }
 
   Future<void> sendMessageFCT() async {
@@ -274,6 +272,7 @@ class _ChatScreenState extends State<ChatScreen> {
       );
       return;
     }
+
     try {
       String msg = textEditingController.text;
       setState(() {
@@ -282,6 +281,8 @@ class _ChatScreenState extends State<ChatScreen> {
         textEditingController.clear();
         focusNode.unfocus();
       });
+      //first scroll to the end of the list
+      await scrollListToEND();
       ChatModel _newChatMessage = ChatModel(
           id: Uuid().v4(),
           // just for testing adding all the previous messages to the reply to id
@@ -307,7 +308,6 @@ class _ChatScreenState extends State<ChatScreen> {
       ));
     } finally {
       setState(() {
-        scrollListToEND();
         _isTyping = false;
       });
     }
