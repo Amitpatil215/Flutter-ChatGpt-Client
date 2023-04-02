@@ -9,6 +9,7 @@ import 'package:chatgpt_course/screens/setting_screen.dart';
 import 'package:chatgpt_course/widgets/chat_widget.dart';
 import 'package:chatgpt_course/widgets/reply_message_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -36,8 +37,21 @@ class _ChatScreenState extends State<ChatScreen> {
     _initAppConstants();
     _listScrollController = ScrollController();
     textEditingController = TextEditingController();
-    focusNode = FocusNode();
+    focusNode = FocusNode(
+      onKey: _handleKeyPress,
+    );
     super.initState();
+  }
+
+  KeyEventResult _handleKeyPress(FocusNode focusNode, RawKeyEvent event) {
+    // handles submit on enter
+    if (event.isKeyPressed(LogicalKeyboardKey.enter) && !event.isShiftPressed) {
+      // handled means that the event will not propagate
+      sendMessageFCT();
+      return KeyEventResult.handled;
+    }
+    // ignore every other keyboard event including SHIFT+ENTER
+    return KeyEventResult.ignored;
   }
 
   @override
@@ -56,7 +70,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final modelsProvider = Provider.of<ModelsProvider>(context);
     final chatProvider = Provider.of<ChatProvider>(context);
     return Scaffold(
       appBar: AppBar(
@@ -65,7 +78,7 @@ class _ChatScreenState extends State<ChatScreen> {
           padding: const EdgeInsets.all(8.0),
           child: Image.asset(AssetsManager.chatnobg),
         ),
-        title: const Text("ChatGPT"),
+        title: const Text("Personified"),
         actions: [
           IconButton(
             onPressed: () async {
@@ -178,9 +191,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         style: const TextStyle(color: Colors.white),
                         controller: textEditingController,
                         onSaved: (value) async {
-                          await sendMessageFCT(
-                              modelsProvider: modelsProvider,
-                              chatProvider: chatProvider);
+                          await sendMessageFCT();
                         },
                         decoration: const InputDecoration.collapsed(
                             hintText: "How can I help you",
@@ -188,17 +199,15 @@ class _ChatScreenState extends State<ChatScreen> {
                         maxLines: 4,
                         minLines: 1,
                         onFieldSubmitted: (val) async {
-                          await sendMessageFCT(
-                              modelsProvider: modelsProvider,
-                              chatProvider: chatProvider);
+                          await sendMessageFCT();
                         },
+                        keyboardType: TextInputType.multiline,
+                        textInputAction: TextInputAction.newline,
                       ),
                     ),
                     IconButton(
                         onPressed: () async {
-                          await sendMessageFCT(
-                              modelsProvider: modelsProvider,
-                              chatProvider: chatProvider);
+                          await sendMessageFCT();
                         },
                         icon: const Icon(
                           Icons.send,
@@ -221,9 +230,11 @@ class _ChatScreenState extends State<ChatScreen> {
         curve: Curves.easeOut);
   }
 
-  Future<void> sendMessageFCT(
-      {required ModelsProvider modelsProvider,
-      required ChatProvider chatProvider}) async {
+  Future<void> sendMessageFCT() async {
+    final ModelsProvider modelsProvider =
+        Provider.of<ModelsProvider>(context, listen: false);
+    final ChatProvider chatProvider =
+        Provider.of<ChatProvider>(context, listen: false);
     if (_isTyping) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
