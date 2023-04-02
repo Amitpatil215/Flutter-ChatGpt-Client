@@ -65,7 +65,11 @@ class _ChatScreenState extends State<ChatScreen> {
   Future _initAppConstants() async {
     final apiKey =
         await Provider.of<AuthProvider>(context, listen: false).getApiKey();
-    ApiConstants.API_KEY = apiKey ?? "";
+    final maxTokens =
+        await Provider.of<AuthProvider>(context, listen: false).getMaxToken();
+
+    ApiConstants.API_KEY = apiKey ?? ApiConstants.API_KEY;
+    ApiConstants.MAX_TOKENS = maxTokens ?? ApiConstants.MAX_TOKENS;
   }
 
   @override
@@ -107,14 +111,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 itemCount: chatProvider.getChatList.length,
                 itemBuilder: (BuildContext context, int index) {
                   final chatList = chatProvider.getChatList.reversed.toList();
-                  String _repliedToText =
-                      chatList[index].repliedToId != null
-                          ? chatList
-                              .firstWhere((chat) =>
-                                  chat.id ==
-                                  chatList[index].repliedToId)
-                              .msg
-                          : "";
+                  String _repliedToText = chatList[index].repliedToId != null
+                      ? chatList
+                          .firstWhere(
+                              (chat) => chat.id == chatList[index].repliedToId)
+                          .msg
+                      : "";
                   return Dismissible(
                     key: Key(Uuid().v4()),
                     direction: DismissDirection.startToEnd,
@@ -149,8 +151,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       msg: chatList[index].msg,
                       chatIndex: chatList[index].chatIndex,
                       repliedToMessage: _repliedToText,
-                      shouldAnimate:
-                          chatList.length - 1 == index,
+                      shouldAnimate: chatList.length - 1 == index,
                     ),
                     // Other chat bubble properties
                   );

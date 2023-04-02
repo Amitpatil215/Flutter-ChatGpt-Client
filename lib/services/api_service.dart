@@ -62,7 +62,7 @@ class ApiService {
                 .toList(),
             "temperature": 0.5,
             "n": 1,
-            "max_tokens": 300,
+            "max_tokens": ApiConstants.MAX_TOKENS,
           },
         ),
       );
@@ -119,7 +119,7 @@ class ApiService {
             .toList(),
         "temperature": 0.5,
         "n": 1,
-        "max_tokens": 300,
+        "max_tokens": ApiConstants.MAX_TOKENS,
         "stream": true,
       },
     );
@@ -181,7 +181,7 @@ class ApiService {
           {
             "model": modelId,
             "prompt": message,
-            "max_tokens": ApiConstants.max_tokens,
+            "max_tokens": ApiConstants.MAX_TOKENS,
           },
         ),
       );

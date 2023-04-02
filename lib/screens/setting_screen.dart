@@ -11,6 +11,8 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final _apiKeyController = TextEditingController();
+  final _tokenCountController = TextEditingController();
+
   bool _isLoading = false;
 
   @override
@@ -25,9 +27,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
 
     final apiKey = SharedPrefService().getValue('api_key');
+    final tokenCount = SharedPrefService().getValue('token_count');
     if (apiKey != null) {
       _apiKeyController.text = apiKey;
     }
+    _tokenCountController.text = (tokenCount ?? ApiConstants.MAX_TOKENS).toString();
+
     setState(() {
       _isLoading = false;
     });
@@ -39,6 +44,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     // ignore: use_build_context_synchronously
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('API key saved')),
+    );
+  }
+
+  Future<void> _saveTokenCount() async {
+    await SharedPrefService()
+        .setValue('token_count', int.parse(_tokenCountController.text));
+    ApiConstants.MAX_TOKENS = int.parse(_tokenCountController.text);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Token count saved')),
     );
   }
 
@@ -74,9 +88,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       filled: true,
                     ),
                   ),
+                  const Text(
+                    'Token Count',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueGrey,
+                    ),
+                  ),
+                  const SizedBox(height: 8.0),
+                  TextField(
+                    controller: _tokenCountController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'Enter the number of tokens',
+                      fillColor: Colors.white,
+                      filled: true,
+                    ),
+                  ),
                   const SizedBox(height: 16.0),
                   ElevatedButton(
-                    onPressed: _saveApiKey,
+                    onPressed: () {
+                      _saveApiKey();
+                      _saveTokenCount();
+                    },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.blueGrey[900],
