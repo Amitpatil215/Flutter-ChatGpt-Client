@@ -127,7 +127,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       onUpdate: (DismissUpdateDetails details) {
                         if (details.reached && !details.previousReached) {
                           log("Replying to message");
-
+                          focusNode.requestFocus();
                           setState(() {
                             _isReplingToId = chatList[index].id;
                           });
