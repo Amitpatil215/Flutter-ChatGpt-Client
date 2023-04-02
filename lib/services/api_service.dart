@@ -98,6 +98,9 @@ class ApiService {
   static Stream<String> sendMessageStream(
       {required List<ChatModel> relatedMessageList,
       required String modelId}) async* {
+    log("Requesting Streamed Response chat/completions");
+    log("Model -> $modelId | MaxTokens -> ${ApiConstants.MAX_TOKENS} | Stream -> true | temperature -> 0.5 ");
+
     final request = http.Request(
         "POST", Uri.parse("${ApiConstants.BASE_URL}/chat/completions"))
       ..headers.addAll({

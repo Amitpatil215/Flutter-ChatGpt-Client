@@ -63,6 +63,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future _initAppConstants() async {
+    log("Init App Constants api key and max tokens");
     final apiKey =
         await Provider.of<AuthProvider>(context, listen: false).getApiKey();
     final maxTokens =

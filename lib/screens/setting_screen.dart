@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chatgpt_course/constants/api_consts.dart';
 import 'package:chatgpt_course/services/shared_pref_service.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +24,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _loadPrefs() async {
+    log("Loading prefs");
     setState(() {
       _isLoading = true;
     });
@@ -31,7 +34,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (apiKey != null) {
       _apiKeyController.text = apiKey;
     }
-    _tokenCountController.text = (tokenCount ?? ApiConstants.MAX_TOKENS).toString();
+    _tokenCountController.text =
+        (tokenCount ?? ApiConstants.MAX_TOKENS).toString();
 
     setState(() {
       _isLoading = false;
@@ -45,6 +49,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('API key saved')),
     );
+    log("API key saved");
   }
 
   Future<void> _saveTokenCount() async {
@@ -54,6 +59,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Token count saved')),
     );
+    log("Max Token count saved");
   }
 
   @override
@@ -109,9 +115,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(height: 16.0),
                   ElevatedButton(
-                    onPressed: () {
-                      _saveApiKey();
-                      _saveTokenCount();
+                    onPressed: () async {
+                      await _saveApiKey();
+                      await _saveTokenCount();
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,

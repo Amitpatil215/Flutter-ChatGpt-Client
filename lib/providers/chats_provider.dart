@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 // ignore: unused_import
 import 'package:chatgpt_course/constants/constants.dart';
@@ -31,6 +32,7 @@ class ChatProvider with ChangeNotifier {
   }
 
   void addUserMessage({required ChatModel chatMessage}) {
+    log("Adding user message");
     chatList.add(chatMessage);
     notifyListeners();
   }
@@ -41,6 +43,7 @@ class ChatProvider with ChangeNotifier {
     _getRelatedMessages(chatMessage: chatMessage);
     _relatedMessageList = _relatedMessageList.reversed.toList();
     // add system message
+    log("Adding system promt message");
     _relatedMessageList.insert(0, _systemMessage);
     // make a request to the API
     if (chosenModelId.toLowerCase().startsWith("gpt")) {
@@ -57,7 +60,7 @@ class ChatProvider with ChangeNotifier {
         msg: "",
         chatIndex: 1,
       ));
-
+      log("Creating new stream");
       _onGoningStreamListner = ApiService.sendMessageStream(
         relatedMessageList: _relatedMessageList,
         modelId: chosenModelId,
@@ -66,6 +69,7 @@ class ChatProvider with ChangeNotifier {
         notifyListeners();
       });
       _onGoningStreamListner?.onDone(() {
+        log("Generating response done");
         closeStream();
       });
     } else {
@@ -81,6 +85,7 @@ class ChatProvider with ChangeNotifier {
   void _getRelatedMessages({
     required ChatModel chatMessage,
   }) {
+    log("Getting related messages");
     _relatedMessageList.add(chatMessage);
     if (chatMessage.repliedToId != null) {
       _getRelatedMessages(
@@ -92,6 +97,7 @@ class ChatProvider with ChangeNotifier {
 
   //close on going stream
   void closeStream() {
+    log("Closing stream");
     if (isStreamActive()) {
       _onGoningStreamListner?.cancel();
       _onGoningStreamListner = null;
