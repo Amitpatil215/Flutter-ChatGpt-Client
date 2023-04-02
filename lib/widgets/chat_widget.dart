@@ -79,28 +79,21 @@ class ChatWidget extends StatelessWidget {
                       ),
                     if (repliedToMessage.isNotEmpty && chatIndex == 0)
                       SizedBox(height: 5),
-                    chatIndex == 0
-                        ? TextWidget(
-                            label: msg,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 16)
-                        : Column(
-                            children: [
-                              ...MarkdownGenerator(
-                                config: MarkdownConfig(
-                                  configs: [
-                                    CodeConfig.darkConfig,
-                                    PConfig(
-                                      textStyle: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ).buildWidgets(msg.trim())
-                            ],
-                          )
+                    MarkdownWidget(
+                      shrinkWrap: true,
+                      data: msg.trim(),
+                      config: MarkdownConfig(
+                        configs: [
+                          CodeConfig.darkConfig,
+                          PConfig(
+                            textStyle: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
