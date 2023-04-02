@@ -9,6 +9,7 @@ import 'package:chatgpt_course/screens/setting_screen.dart';
 import 'package:chatgpt_course/widgets/chat_widget.dart';
 import 'package:chatgpt_course/widgets/reply_message_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -29,20 +30,33 @@ class _ChatScreenState extends State<ChatScreen> {
   String? _isReplingToId;
 
   late TextEditingController textEditingController;
-  late ScrollController _listScrollController;
+  // late ScrollController _listScrollController;
   late FocusNode focusNode;
   @override
   void initState() {
     _initAppConstants();
-    _listScrollController = ScrollController();
+    // _listScrollController = ScrollController();
     textEditingController = TextEditingController();
-    focusNode = FocusNode();
+    focusNode = FocusNode(
+      onKey: _handleKeyPress,
+    );
     super.initState();
+  }
+
+  KeyEventResult _handleKeyPress(FocusNode focusNode, RawKeyEvent event) {
+    // handles submit on enter
+    if (event.isKeyPressed(LogicalKeyboardKey.enter) && !event.isShiftPressed) {
+      // handled means that the event will not propagate
+      sendMessageFCT();
+      return KeyEventResult.handled;
+    }
+    // ignore every other keyboard event including SHIFT+ENTER
+    return KeyEventResult.ignored;
   }
 
   @override
   void dispose() {
-    _listScrollController.dispose();
+    // _listScrollController.dispose();
     textEditingController.dispose();
     focusNode.dispose();
     super.dispose();
@@ -56,7 +70,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final modelsProvider = Provider.of<ModelsProvider>(context);
     final chatProvider = Provider.of<ChatProvider>(context);
     return Scaffold(
       appBar: AppBar(
@@ -65,7 +78,7 @@ class _ChatScreenState extends State<ChatScreen> {
           padding: const EdgeInsets.all(8.0),
           child: Image.asset(AssetsManager.chatnobg),
         ),
-        title: const Text("ChatGPT"),
+        title: const Text("Personified"),
         actions: [
           IconButton(
             onPressed: () async {
@@ -89,15 +102,17 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Flexible(
               child: ListView.builder(
-                controller: _listScrollController,
+                // controller: _listScrollController,
+                reverse: true,
                 itemCount: chatProvider.getChatList.length,
                 itemBuilder: (BuildContext context, int index) {
+                  final chatList = chatProvider.getChatList.reversed.toList();
                   String _repliedToText =
-                      chatProvider.getChatList[index].repliedToId != null
-                          ? chatProvider.getChatList
+                      chatList[index].repliedToId != null
+                          ? chatList
                               .firstWhere((chat) =>
                                   chat.id ==
-                                  chatProvider.getChatList[index].repliedToId)
+                                  chatList[index].repliedToId)
                               .msg
                           : "";
                   return Dismissible(
@@ -111,7 +126,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         log("Replying to message");
 
                         setState(() {
-                          _isReplingToId = chatProvider.getChatList[index].id;
+                          _isReplingToId = chatList[index].id;
                         });
                       }
                     },
@@ -131,11 +146,11 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                     ),
                     child: ChatWidget(
-                      msg: chatProvider.getChatList[index].msg,
-                      chatIndex: chatProvider.getChatList[index].chatIndex,
+                      msg: chatList[index].msg,
+                      chatIndex: chatList[index].chatIndex,
                       repliedToMessage: _repliedToText,
                       shouldAnimate:
-                          chatProvider.getChatList.length - 1 == index,
+                          chatList.length - 1 == index,
                     ),
                     // Other chat bubble properties
                   );
@@ -153,7 +168,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             if (_isReplingToId != null) ...[
               ReplyMessageWidget(
-                message: chatProvider.getChatList.firstWhere(
+                message: chatProvider.chatList.firstWhere(
                   (chat) => chat.id == _isReplingToId,
                 ),
                 onCancelReply: () {
@@ -178,20 +193,23 @@ class _ChatScreenState extends State<ChatScreen> {
                         style: const TextStyle(color: Colors.white),
                         controller: textEditingController,
                         onSaved: (value) async {
-                          await sendMessageFCT(
-                              modelsProvider: modelsProvider,
-                              chatProvider: chatProvider);
+                          await sendMessageFCT();
                         },
                         decoration: const InputDecoration.collapsed(
                             hintText: "How can I help you",
                             hintStyle: TextStyle(color: Colors.grey)),
+                        maxLines: 4,
+                        minLines: 1,
+                        onFieldSubmitted: (val) async {
+                          await sendMessageFCT();
+                        },
+                        keyboardType: TextInputType.multiline,
+                        textInputAction: TextInputAction.newline,
                       ),
                     ),
                     IconButton(
                         onPressed: () async {
-                          await sendMessageFCT(
-                              modelsProvider: modelsProvider,
-                              chatProvider: chatProvider);
+                          await sendMessageFCT();
                         },
                         icon: const Icon(
                           Icons.send,
@@ -208,15 +226,17 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void scrollListToEND() {
-    _listScrollController.animateTo(
-        _listScrollController.position.maxScrollExtent,
-        duration: const Duration(seconds: 1),
-        curve: Curves.easeOut);
+    // _listScrollController.animateTo(
+    //     _listScrollController.position.maxScrollExtent,
+    //     duration: const Duration(seconds: 1),
+    //     curve: Curves.easeOut);
   }
 
-  Future<void> sendMessageFCT(
-      {required ModelsProvider modelsProvider,
-      required ChatProvider chatProvider}) async {
+  Future<void> sendMessageFCT() async {
+    final ModelsProvider modelsProvider =
+        Provider.of<ModelsProvider>(context, listen: false);
+    final ChatProvider chatProvider =
+        Provider.of<ChatProvider>(context, listen: false);
     if (_isTyping) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

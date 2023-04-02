@@ -2,8 +2,6 @@ import 'package:chatgpt_course/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 
-import 'text_widget.dart';
-
 class ChatWidget extends StatelessWidget {
   const ChatWidget({
     super.key,
@@ -79,28 +77,21 @@ class ChatWidget extends StatelessWidget {
                       ),
                     if (repliedToMessage.isNotEmpty && chatIndex == 0)
                       SizedBox(height: 5),
-                    chatIndex == 0
-                        ? TextWidget(
-                            label: msg,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 16)
-                        : Column(
-                            children: [
-                              ...MarkdownGenerator(
-                                config: MarkdownConfig(
-                                  configs: [
-                                    CodeConfig.darkConfig,
-                                    PConfig(
-                                      textStyle: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ).buildWidgets(msg.trim())
-                            ],
-                          )
+                    MarkdownWidget(
+                      shrinkWrap: true,
+                      data: msg.trim(),
+                      config: MarkdownConfig(
+                        configs: [
+                          CodeConfig.darkConfig,
+                          PConfig(
+                            textStyle: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
