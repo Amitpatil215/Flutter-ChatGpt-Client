@@ -7,13 +7,8 @@
 
 
 ## Overview
-<div style="display:flex;">
-  <img src="https://user-images.githubusercontent.com/54329870/229358886-48e72b80-2e32-4bff-83c7-5992fa28348d.jpg" alt="image1" style="width:33.33%;">
 
-  <img src="https://user-images.githubusercontent.com/54329870/229358888-ad77fef9-ac8d-436f-8550-3d6173e45260.jpg" alt="image2" style="width:33.33%;">
-  
-  <img src="https://user-images.githubusercontent.com/54329870/229358890-0c7a66f2-b669-4951-a3c6-0720e5099c0b.jpg" alt="image3" style="width:33.33%;">
-</div
+<img src="https://user-images.githubusercontent.com/54329870/229358886-48e72b80-2e32-4bff-83c7-5992fa28348d.jpg" alt="image1" width="30.33%"> <img src="https://user-images.githubusercontent.com/54329870/229358888-ad77fef9-ac8d-436f-8550-3d6173e45260.jpg" alt="image2" width="30.33%"> <img src="https://user-images.githubusercontent.com/54329870/229358890-0c7a66f2-b669-4951-a3c6-0720e5099c0b.jpg" alt="image3" width="30.33%">
 
 
 
