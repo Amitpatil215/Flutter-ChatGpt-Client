@@ -154,7 +154,6 @@ class ApiService {
           if (delta["content"] != null) {
             final content = delta["content"] as String;
             responseText += content;
-            print("content- > $content");
             yield content;
           }
         }

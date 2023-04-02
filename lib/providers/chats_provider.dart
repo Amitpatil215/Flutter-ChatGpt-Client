@@ -53,7 +53,6 @@ class ChatProvider with ChangeNotifier {
         modelId: chosenModelId,
       ).listen((event) {
         chatList.last.msg += event;
-        print(event);
         notifyListeners();
       });
     } else {
