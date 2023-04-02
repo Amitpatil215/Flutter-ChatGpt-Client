@@ -1,37 +1,34 @@
-name: Deploy to web
+name: CI
+
 on:
   push:
-    branches: [ "main" ]
-  # pull_request:
-    # branches: [ "main" ]
-
-# Declare default permissions as read only.
-permissions: read-all
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-      # Set up Flutter.
-      - name: Clone Flutter repository with master channel
-        uses: subosito/flutter-action@dbf1fa04f4d2e52c33185153d06cdb5443aa189d
-        with:
-          channel: master
-      - run: flutter doctor -v
+    - uses: actions/checkout@v2
+    - uses: subosito/flutter-action@v1
+      with:
+        channel: beta
+    - run: flutter config --enable-web
+    - run: flutter build web
 
-      - name: Install web dependencies
-        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c
-        with:
-          node-version: "14"
-      - run: npm install -g firebase-tools@11.0.1
-
-      # Checkout gallery code and get packages.
-      - name: Checkout gallery code
-        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
-      - run: flutter pub get
-
-      # Build and deploy (by default, to staging).
-      - run: flutter build -v web --release
-      - run: firebase deploy --only hosting:${{ github.event.inputs.environment || 'staging' }}
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+    - name: Deploy to Netlify
+      uses: nwtgck/actions-netlify@v1.1
+      with:
+        publish-dir: './build/web'
+        production-branch: main
+        github-token: ${{ secrets.ACEESS_GITHUB }}
+        deploy-message: "Deploy from GitHub Actions"
+        enable-pull-request-comment: false
+        enable-commit-comment: true
+        overwrites-pull-request-comment: true
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      timeout-minutes: 1
