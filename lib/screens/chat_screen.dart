@@ -160,12 +160,15 @@ class _ChatScreenState extends State<ChatScreen> {
                 );
               }),
             ),
-            if (_isTyping) ...[
-              const SpinKitThreeBounce(
-                color: Colors.white,
-                size: 18,
-              ),
-            ],
+            // show typing indicator
+            Consumer<ChatProvider>(builder: (context, chatProvider, wi) {
+              return chatProvider.getOnGoingStream?.isPaused ?? true
+                  ? SizedBox()
+                  : const SpinKitThreeBounce(
+                      color: Colors.white,
+                      size: 18,
+                    );
+            }),
             const SizedBox(
               height: 15,
             ),
