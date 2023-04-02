@@ -1,4 +1,10 @@
 # ChatGPT Flutter Client Project Readme
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/6650f241-4b5c-434a-98b4-7601655a0e0f/deploy-status)](https://app.netlify.com/sites/personified/deploys)
+ ![Github Action Main](https://github.com/Amitpatil215/Flutter-ChatGpt-Client/actions/workflows/release_deploy_web.yml/badge.svg
+)
+
+
 ![1](https://user-images.githubusercontent.com/54329870/228063254-51ea3291-8a73-4864-8ad0-7ebb5282ae4e.png)
 ## Overview
 
