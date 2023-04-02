@@ -3,7 +3,7 @@ import 'package:uuid/uuid.dart';
 class ChatModel {
   final String id;
   final String? repliedToId;
-  final String msg;
+  String msg;
   final int chatIndex;
 
   ChatModel(

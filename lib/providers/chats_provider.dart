@@ -11,7 +11,7 @@ class ChatProvider with ChangeNotifier {
   ChatModel _systemMessage = ChatModel(
       id: Uuid().v4(),
       msg:
-          "You are ChatGPT, a large language model trained by OpenAI. Current date and time: ${DateTime.now()}",
+          "Act as a you are multi talented personal chat bot for helping me in coding, copywriting and in general life. Avoid telling me you are a AI bot, I know it already personify yourself as humanoid bot. Current date and time: ${DateTime.now()}",
       chatIndex: 3);
 
   /// used to get list of messages related to the current messageS
@@ -35,10 +35,27 @@ class ChatProvider with ChangeNotifier {
     _relatedMessageList.insert(0, _systemMessage);
     // make a request to the API
     if (chosenModelId.toLowerCase().startsWith("gpt")) {
-      chatList.addAll(await ApiService.sendMessageGPT(
+      //? Code for non stream response
+      /* chatList.addAll(await ApiService.sendMessageGPT(
         relatedMessageList: _relatedMessageList,
         modelId: chosenModelId,
+      )); */
+
+      //? Code for streamed response
+      chatList.add(ChatModel(
+        id: Uuid().v4(),
+        repliedToId: chatList.last.id,
+        msg: "",
+        chatIndex: 1,
       ));
+      ApiService.sendMessageStream(
+        relatedMessageList: _relatedMessageList,
+        modelId: chosenModelId,
+      ).listen((event) {
+        chatList.last.msg += event;
+        print(event);
+        notifyListeners();
+      });
     } else {
       chatList.addAll(await ApiService.sendMessage(
         message: chatMessage.msg,
