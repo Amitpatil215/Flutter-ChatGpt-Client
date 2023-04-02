@@ -74,7 +74,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final chatProvider = Provider.of<ChatProvider>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
@@ -105,58 +104,61 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Column(
           children: [
             Flexible(
-              child: ListView.builder(
-                // controller: _listScrollController,
-                reverse: true,
-                itemCount: chatProvider.getChatList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final chatList = chatProvider.getChatList.reversed.toList();
-                  String _repliedToText = chatList[index].repliedToId != null
-                      ? chatList
-                          .firstWhere(
-                              (chat) => chat.id == chatList[index].repliedToId)
-                          .msg
-                      : "";
-                  return Dismissible(
-                    key: Key(Uuid().v4()),
-                    direction: DismissDirection.startToEnd,
-                    dismissThresholds: {
-                      DismissDirection.startToEnd: 0.1,
-                    },
-                    onUpdate: (DismissUpdateDetails details) {
-                      if (details.reached && !details.previousReached) {
-                        log("Replying to message");
+              child:
+                  Consumer<ChatProvider>(builder: (context, chatProvider, wi) {
+                return ListView.builder(
+                  // controller: _listScrollController,
+                  reverse: true,
+                  itemCount: chatProvider.getChatList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final chatList = chatProvider.getChatList.reversed.toList();
+                    String _repliedToText = chatList[index].repliedToId != null
+                        ? chatList
+                            .firstWhere((chat) =>
+                                chat.id == chatList[index].repliedToId)
+                            .msg
+                        : "";
+                    return Dismissible(
+                      key: Key(Uuid().v4()),
+                      direction: DismissDirection.startToEnd,
+                      dismissThresholds: {
+                        DismissDirection.startToEnd: 0.1,
+                      },
+                      onUpdate: (DismissUpdateDetails details) {
+                        if (details.reached && !details.previousReached) {
+                          log("Replying to message");
 
-                        setState(() {
-                          _isReplingToId = chatList[index].id;
-                        });
-                      }
-                    },
-                    confirmDismiss: (direction) {
-                      // do not actually dismiss the widget
-                      return Future.value(false);
-                    },
-                    background: Container(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Icon(Icons.reply_outlined, color: Colors.white),
-                          ],
+                          setState(() {
+                            _isReplingToId = chatList[index].id;
+                          });
+                        }
+                      },
+                      confirmDismiss: (direction) {
+                        // do not actually dismiss the widget
+                        return Future.value(false);
+                      },
+                      background: Container(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(Icons.reply_outlined, color: Colors.white),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    child: ChatWidget(
-                      msg: chatList[index].msg,
-                      chatIndex: chatList[index].chatIndex,
-                      repliedToMessage: _repliedToText,
-                      shouldAnimate: chatList.length - 1 == index,
-                    ),
-                    // Other chat bubble properties
-                  );
-                },
-              ),
+                      child: ChatWidget(
+                        msg: chatList[index].msg,
+                        chatIndex: chatList[index].chatIndex,
+                        repliedToMessage: _repliedToText,
+                        shouldAnimate: chatList.length - 1 == index,
+                      ),
+                      // Other chat bubble properties
+                    );
+                  },
+                );
+              }),
             ),
             if (_isTyping) ...[
               const SpinKitThreeBounce(
@@ -169,9 +171,11 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             if (_isReplingToId != null) ...[
               ReplyMessageWidget(
-                message: chatProvider.chatList.firstWhere(
-                  (chat) => chat.id == _isReplingToId,
-                ),
+                message: Provider.of<ChatProvider>(context, listen: false)
+                    .chatList
+                    .firstWhere(
+                      (chat) => chat.id == _isReplingToId,
+                    ),
                 onCancelReply: () {
                   setState(() {
                     _isReplingToId = null;
@@ -208,14 +212,24 @@ class _ChatScreenState extends State<ChatScreen> {
                         textInputAction: TextInputAction.newline,
                       ),
                     ),
-                    IconButton(
-                        onPressed: () async {
-                          await sendMessageFCT();
-                        },
-                        icon: const Icon(
-                          Icons.send,
-                          color: Colors.white,
-                        ))
+                    Consumer<ChatProvider>(
+                        builder: (context, chatProvider, wii) {
+                      return IconButton(
+                          onPressed: () async {
+                            if (chatProvider.getOnGoingStream?.isPaused ??
+                                true) {
+                              await sendMessageFCT();
+                            } else {
+                              _stopGeneratingMessages();
+                            }
+                          },
+                          icon: Icon(
+                            chatProvider.getOnGoingStream?.isPaused ?? true
+                                ? Icons.send
+                                : Icons.stop,
+                            color: Colors.white,
+                          ));
+                    })
                   ],
                 ),
               ),
@@ -297,5 +311,9 @@ class _ChatScreenState extends State<ChatScreen> {
         _isTyping = false;
       });
     }
+  }
+
+  void _stopGeneratingMessages() {
+    Provider.of<ChatProvider>(context, listen: false).closeStream();
   }
 }

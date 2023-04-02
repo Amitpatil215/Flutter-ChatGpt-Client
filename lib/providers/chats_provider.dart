@@ -1,4 +1,6 @@
 // ignore: unused_import
+import 'dart:async';
+
 import 'package:chatgpt_course/constants/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:uuid/uuid.dart';
@@ -6,8 +8,10 @@ import '../models/chat_model.dart';
 import '../services/api_service.dart';
 
 class ChatProvider with ChangeNotifier {
-  List<ChatModel> chatList = [];
-  // List<ChatModel> chatList = [...dummyChatListData];
+  // List<ChatModel> chatList = [];
+  List<ChatModel> chatList = [...dummyChatListData];
+
+  StreamSubscription<String>? _onGoningStreamListner;
   ChatModel _systemMessage = ChatModel(
       id: Uuid().v4(),
       msg:
@@ -19,6 +23,11 @@ class ChatProvider with ChangeNotifier {
   List<ChatModel> _relatedMessageList = [];
   List<ChatModel> get getChatList {
     return chatList;
+  }
+
+  // get ongoing stream
+  StreamSubscription<String>? get getOnGoingStream {
+    return _onGoningStreamListner;
   }
 
   void addUserMessage({required ChatModel chatMessage}) {
@@ -48,12 +57,16 @@ class ChatProvider with ChangeNotifier {
         msg: "",
         chatIndex: 1,
       ));
-      ApiService.sendMessageStream(
+
+      _onGoningStreamListner = ApiService.sendMessageStream(
         relatedMessageList: _relatedMessageList,
         modelId: chosenModelId,
       ).listen((event) {
         chatList.last.msg += event;
         notifyListeners();
+      });
+      _onGoningStreamListner?.onDone(() {
+        closeStream();
       });
     } else {
       chatList.addAll(await ApiService.sendMessage(
@@ -61,6 +74,7 @@ class ChatProvider with ChangeNotifier {
         modelId: chosenModelId,
       ));
     }
+
     notifyListeners();
   }
 
@@ -74,5 +88,20 @@ class ChatProvider with ChangeNotifier {
         (chat) => chat.id == chatMessage.repliedToId,
       ));
     }
+  }
+
+  //close on going stream
+  void closeStream() {
+    if (isStreamActive()) {
+      _onGoningStreamListner?.cancel();
+      _onGoningStreamListner = null;
+      notifyListeners();
+    }
+  }
+
+  //check if stream is active
+  bool isStreamActive() {
+    if (_onGoningStreamListner == null) return false;
+    return !_onGoningStreamListner!.isPaused;
   }
 }
