@@ -69,6 +69,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final maxTokens =
         await Provider.of<AuthProvider>(context, listen: false).getMaxToken();
 
+    await Provider.of<ChatProvider>(context, listen: false).getStoredMessages();
+
     ApiConstants.API_KEY = apiKey ?? ApiConstants.API_KEY;
     ApiConstants.MAX_TOKENS = maxTokens ?? ApiConstants.MAX_TOKENS;
   }

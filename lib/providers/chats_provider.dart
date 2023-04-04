@@ -3,6 +3,7 @@ import 'dart:developer';
 
 // ignore: unused_import
 import 'package:chatgpt_course/constants/constants.dart';
+import 'package:chatgpt_course/dao/chat_model_dao.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:uuid/uuid.dart';
 import '../models/chat_model.dart';
@@ -11,6 +12,8 @@ import '../services/api_service.dart';
 class ChatProvider with ChangeNotifier {
   List<ChatModel> chatList = [];
   // List<ChatModel> chatList = [...dummyChatListData];
+
+  ChatModelDao _chatModelDao = ChatModelDao();
 
   StreamSubscription<String>? _onGoningStreamListner;
   ChatModel _systemMessage = ChatModel(
@@ -31,9 +34,16 @@ class ChatProvider with ChangeNotifier {
     return _onGoningStreamListner;
   }
 
-  void addUserMessage({required ChatModel chatMessage}) {
+  // get stored messages from dao
+  Future<void> getStoredMessages() async {
+    chatList = await _chatModelDao.getAllChats();
+    notifyListeners();
+  }
+
+  void addUserMessage({required ChatModel chatMessage}) async {
     log("Adding user message");
     chatList.add(chatMessage);
+    await _chatModelDao.insertChat(chatMessage);
     notifyListeners();
   }
 
@@ -68,9 +78,10 @@ class ChatProvider with ChangeNotifier {
         chatList.last.msg += event;
         notifyListeners();
       });
-      _onGoningStreamListner?.onDone(() {
+      _onGoningStreamListner?.onDone(() async {
         log("Generating response done");
         closeStream();
+        await _chatModelDao.insertChat(chatList.last);
       });
     } else {
       chatList.addAll(await ApiService.sendMessage(
