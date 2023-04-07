@@ -62,7 +62,7 @@ class ApiService {
                 .toList(),
             "temperature": 0.5,
             "n": 1,
-            "max_tokens": 300,
+            "max_tokens": ApiConstants.MAX_TOKENS,
           },
         ),
       );
@@ -98,6 +98,9 @@ class ApiService {
   static Stream<String> sendMessageStream(
       {required List<ChatModel> relatedMessageList,
       required String modelId}) async* {
+    log("Requesting Streamed Response chat/completions");
+    log("Model -> $modelId | MaxTokens -> ${ApiConstants.MAX_TOKENS} | Stream -> true | temperature -> 0.5 ");
+
     final request = http.Request(
         "POST", Uri.parse("${ApiConstants.BASE_URL}/chat/completions"))
       ..headers.addAll({
@@ -119,7 +122,7 @@ class ApiService {
             .toList(),
         "temperature": 0.5,
         "n": 1,
-        "max_tokens": 300,
+        "max_tokens": ApiConstants.MAX_TOKENS,
         "stream": true,
       },
     );
@@ -154,7 +157,6 @@ class ApiService {
           if (delta["content"] != null) {
             final content = delta["content"] as String;
             responseText += content;
-            print("content- > $content");
             yield content;
           }
         }
@@ -181,7 +183,7 @@ class ApiService {
           {
             "model": modelId,
             "prompt": message,
-            "max_tokens": ApiConstants.max_tokens,
+            "max_tokens": ApiConstants.MAX_TOKENS,
           },
         ),
       );

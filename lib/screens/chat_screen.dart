@@ -30,12 +30,12 @@ class _ChatScreenState extends State<ChatScreen> {
   String? _isReplingToId;
 
   late TextEditingController textEditingController;
-  // late ScrollController _listScrollController;
+  late ScrollController _listScrollController;
   late FocusNode focusNode;
   @override
   void initState() {
     _initAppConstants();
-    // _listScrollController = ScrollController();
+    _listScrollController = ScrollController();
     textEditingController = TextEditingController();
     focusNode = FocusNode(
       onKey: _handleKeyPress,
@@ -56,21 +56,27 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    // _listScrollController.dispose();
+    _listScrollController.dispose();
     textEditingController.dispose();
     focusNode.dispose();
     super.dispose();
   }
 
   Future _initAppConstants() async {
+    log("Init App Constants api key and max tokens");
     final apiKey =
         await Provider.of<AuthProvider>(context, listen: false).getApiKey();
-    ApiConstants.API_KEY = apiKey ?? "";
+    final maxTokens =
+        await Provider.of<AuthProvider>(context, listen: false).getMaxToken();
+
+    await Provider.of<ChatProvider>(context, listen: false).getStoredMessages();
+
+    ApiConstants.API_KEY = apiKey ?? ApiConstants.API_KEY;
+    ApiConstants.MAX_TOKENS = maxTokens ?? ApiConstants.MAX_TOKENS;
   }
 
   @override
   Widget build(BuildContext context) {
-    final chatProvider = Provider.of<ChatProvider>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
@@ -101,76 +107,81 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Column(
           children: [
             Flexible(
-              child: ListView.builder(
-                // controller: _listScrollController,
-                reverse: true,
-                itemCount: chatProvider.getChatList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final chatList = chatProvider.getChatList.reversed.toList();
-                  String _repliedToText =
-                      chatList[index].repliedToId != null
-                          ? chatList
-                              .firstWhere((chat) =>
-                                  chat.id ==
-                                  chatList[index].repliedToId)
-                              .msg
-                          : "";
-                  return Dismissible(
-                    key: Key(Uuid().v4()),
-                    direction: DismissDirection.startToEnd,
-                    dismissThresholds: {
-                      DismissDirection.startToEnd: 0.1,
-                    },
-                    onUpdate: (DismissUpdateDetails details) {
-                      if (details.reached && !details.previousReached) {
-                        log("Replying to message");
-
-                        setState(() {
-                          _isReplingToId = chatList[index].id;
-                        });
-                      }
-                    },
-                    confirmDismiss: (direction) {
-                      // do not actually dismiss the widget
-                      return Future.value(false);
-                    },
-                    background: Container(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Icon(Icons.reply_outlined, color: Colors.white),
-                          ],
+              child:
+                  Consumer<ChatProvider>(builder: (context, chatProvider, wi) {
+                return ListView.builder(
+                  controller: _listScrollController,
+                  reverse: true,
+                  itemCount: chatProvider.getChatList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final chatList = chatProvider.getChatList.reversed.toList();
+                    String _repliedToText = chatList[index].repliedToId != null
+                        ? chatList
+                            .firstWhere((chat) =>
+                                chat.id == chatList[index].repliedToId)
+                            .msg
+                        : "";
+                    return Dismissible(
+                      key: Key(Uuid().v4()),
+                      direction: DismissDirection.startToEnd,
+                      dismissThresholds: {
+                        DismissDirection.startToEnd: 0.1,
+                      },
+                      onUpdate: (DismissUpdateDetails details) {
+                        if (details.reached && !details.previousReached) {
+                          log("Replying to message");
+                          focusNode.requestFocus();
+                          setState(() {
+                            _isReplingToId = chatList[index].id;
+                          });
+                        }
+                      },
+                      confirmDismiss: (direction) {
+                        // do not actually dismiss the widget
+                        return Future.value(false);
+                      },
+                      background: Container(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(Icons.reply_outlined, color: Colors.white),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    child: ChatWidget(
-                      msg: chatList[index].msg,
-                      chatIndex: chatList[index].chatIndex,
-                      repliedToMessage: _repliedToText,
-                      shouldAnimate:
-                          chatList.length - 1 == index,
-                    ),
-                    // Other chat bubble properties
-                  );
-                },
-              ),
+                      child: ChatWidget(
+                        msg: chatList[index].msg,
+                        chatIndex: chatList[index].chatIndex,
+                        repliedToMessage: _repliedToText,
+                        shouldAnimate: chatList.length - 1 == index,
+                      ),
+                      // Other chat bubble properties
+                    );
+                  },
+                );
+              }),
             ),
-            if (_isTyping) ...[
-              const SpinKitThreeBounce(
-                color: Colors.white,
-                size: 18,
-              ),
-            ],
+            // show typing indicator
+            Consumer<ChatProvider>(builder: (context, chatProvider, wi) {
+              return chatProvider.getOnGoingStream?.isPaused ?? true
+                  ? SizedBox()
+                  : const SpinKitThreeBounce(
+                      color: Colors.white,
+                      size: 18,
+                    );
+            }),
             const SizedBox(
               height: 15,
             ),
             if (_isReplingToId != null) ...[
               ReplyMessageWidget(
-                message: chatProvider.chatList.firstWhere(
-                  (chat) => chat.id == _isReplingToId,
-                ),
+                message: Provider.of<ChatProvider>(context, listen: false)
+                    .chatList
+                    .firstWhere(
+                      (chat) => chat.id == _isReplingToId,
+                    ),
                 onCancelReply: () {
                   setState(() {
                     _isReplingToId = null;
@@ -207,14 +218,24 @@ class _ChatScreenState extends State<ChatScreen> {
                         textInputAction: TextInputAction.newline,
                       ),
                     ),
-                    IconButton(
-                        onPressed: () async {
-                          await sendMessageFCT();
-                        },
-                        icon: const Icon(
-                          Icons.send,
-                          color: Colors.white,
-                        ))
+                    Consumer<ChatProvider>(
+                        builder: (context, chatProvider, wii) {
+                      return IconButton(
+                          onPressed: () async {
+                            if (chatProvider.getOnGoingStream?.isPaused ??
+                                true) {
+                              await sendMessageFCT();
+                            } else {
+                              _stopGeneratingMessages();
+                            }
+                          },
+                          icon: Icon(
+                            chatProvider.getOnGoingStream?.isPaused ?? true
+                                ? Icons.send
+                                : Icons.stop,
+                            color: Colors.white,
+                          ));
+                    })
                   ],
                 ),
               ),
@@ -225,11 +246,9 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  void scrollListToEND() {
-    // _listScrollController.animateTo(
-    //     _listScrollController.position.maxScrollExtent,
-    //     duration: const Duration(seconds: 1),
-    //     curve: Curves.easeOut);
+  Future scrollListToEND() async {
+    return await _listScrollController.animateTo(0.0,
+        duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
   }
 
   Future<void> sendMessageFCT() async {
@@ -259,6 +278,7 @@ class _ChatScreenState extends State<ChatScreen> {
       );
       return;
     }
+
     try {
       String msg = textEditingController.text;
       setState(() {
@@ -267,6 +287,8 @@ class _ChatScreenState extends State<ChatScreen> {
         textEditingController.clear();
         focusNode.unfocus();
       });
+      //first scroll to the end of the list
+      await scrollListToEND();
       ChatModel _newChatMessage = ChatModel(
           id: Uuid().v4(),
           // just for testing adding all the previous messages to the reply to id
@@ -292,9 +314,12 @@ class _ChatScreenState extends State<ChatScreen> {
       ));
     } finally {
       setState(() {
-        scrollListToEND();
         _isTyping = false;
       });
     }
+  }
+
+  void _stopGeneratingMessages() {
+    Provider.of<ChatProvider>(context, listen: false).closeStream();
   }
 }
